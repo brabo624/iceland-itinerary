@@ -807,5 +807,62 @@ footer small{display:block;font-family:var(--latin);font-size:10px;letter-spacin
   }
 })();
 </script>
+
+<style>
+  .mybox{margin:18px 0 6px;border:1.5px dashed rgba(15,110,134,.45);border-radius:16px;padding:14px 16px;background:rgba(255,255,255,.55)}
+  .myttl{font-size:12px;font-weight:700;letter-spacing:.08em;color:#0f6e86;margin:0 0 8px}
+  .mylist{list-style:none;margin:0 0 10px;padding:0}
+  .mylist li{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(10,51,70,.08)}
+  .mylist li:last-child{border-bottom:0}
+  .mylist .mt{font-family:var(--latin);font-weight:600;font-size:15px;color:#0a3346;min-width:52px}
+  .mylist .mx{flex:1;font-size:14.5px;color:var(--ink)}
+  .mylist .mdel{border:1px solid rgba(10,51,70,.25);background:#fff;color:#5b7183;border-radius:999px;font-size:11.5px;padding:4px 10px;cursor:pointer}
+  .myempty{font-size:13px;color:var(--ink-2);margin:0 0 10px}
+  .myform{display:flex;gap:8px;flex-wrap:wrap}
+  .myform input{font:inherit;font-size:14.5px;border:1px solid rgba(10,51,70,.3);border-radius:10px;padding:9px 10px;background:#fff;color:var(--ink)}
+  .myform input[type="time"]{width:118px}
+  .myform input[type="text"]{flex:1;min-width:150px}
+  .myform button{font:inherit;font-size:14px;font-weight:700;border:0;border-radius:10px;padding:9px 18px;background:#0f6e86;color:#fff;cursor:pointer}
+</style>
+<script>
+(()=>{
+  const KEY='iceland-my-v1';
+  let store={};
+  try{store=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(_){}
+  const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(store))}catch(_){}};
+  document.querySelectorAll('section.day').forEach(day=>{
+    const id=day.id; if(!store[id])store[id]=[];
+    const box=document.createElement('div');box.className='mybox';
+    const ttl=document.createElement('p');ttl.className='myttl';ttl.textContent='自分の予定メモ（この端末だけに保存されます）';
+    const ul=document.createElement('ul');ul.className='mylist';
+    const empty=document.createElement('p');empty.className='myempty';empty.textContent='まだ追加はありません';
+    const form=document.createElement('div');form.className='myform';
+    const tin=document.createElement('input');tin.type='time';tin.setAttribute('aria-label','時刻');
+    const xin=document.createElement('input');xin.type='text';xin.placeholder='例：起床、集合、持ち物など';xin.setAttribute('aria-label','内容');
+    const btn=document.createElement('button');btn.type='button';btn.textContent='追加';
+    form.append(tin,xin,btn);box.append(ttl,ul,empty,form);
+    const tl=day.querySelector('ol.tl'); tl.after(box);
+    const render=()=>{
+      ul.innerHTML='';
+      const items=store[id].map((v,i)=>({...v,i})).sort((a,b)=>(a.t||'99:99').localeCompare(b.t||'99:99'));
+      empty.style.display=items.length?'none':'block';
+      items.forEach(({t,x,i})=>{
+        const li=document.createElement('li');
+        const mt=document.createElement('span');mt.className='mt';mt.textContent=t||'--:--';
+        const mx=document.createElement('span');mx.className='mx';mx.textContent=x;
+        const del=document.createElement('button');del.className='mdel';del.type='button';del.textContent='削除';
+        del.addEventListener('click',()=>{store[id].splice(i,1);save();render()});
+        li.append(mt,mx,del);ul.append(li);
+      });
+    };
+    btn.addEventListener('click',()=>{
+      const x=xin.value.trim(); if(!x){xin.focus();return}
+      store[id].push({t:tin.value,x}); save(); render();
+      xin.value='';tin.value='';xin.focus();
+    });
+    render();
+  });
+})();
+</script>
 </body>
 </html>
