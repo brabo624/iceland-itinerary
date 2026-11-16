@@ -848,7 +848,7 @@ footer small{display:block;font-family:var(--latin);font-size:10px;letter-spacin
       empty.style.display=items.length?'none':'block';
       items.forEach(({t,x,i})=>{
         const li=document.createElement('li');
-        const mt=document.createElement('span');mt.className='mt';mt.textContent=t||'--:--';
+        const mt=document.createElement('span');mt.className='mt';mt.textContent=t||'メモ';
         const mx=document.createElement('span');mx.className='mx';mx.textContent=x;
         const del=document.createElement('button');del.className='mdel';del.type='button';del.textContent='削除';
         del.addEventListener('click',()=>{store[id].splice(i,1);save();render()});
